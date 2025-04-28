@@ -1,5 +1,5 @@
 const express = require("express");
-//    api/v1/user/signup -> this file route.
+//    api/v1/user  -> this file route.
 const zod = require('zod');
 const { User } = require("../db");
 const jwt = require("jsonwebtoken");
@@ -90,5 +90,60 @@ router.post("/signin" , authMiddleware , async(req, res) => {
         message : "error while loggin in the user "
     })
 })
+
+//Whatever they send, we need to update it in the database for the user.
+//Use the middleware we defined in the last section to authenticate the user
+
+const updateBodySchema = zod.object({
+    password : zod.string().optional(),
+    firstName : zod.string().optional(),
+    lastname : zod.string().optional()
+})
+
+router.put("/" , authMiddleware , async (req, res) => {
+    const {success} = updateBodySchema.safeParse(req.body); // data from the body should folow the specific schema (updateBodySchema)
+
+    if(!success){
+        res.status(411).json({
+            message : "error while updating the users information "
+        })
+    }
+
+    await User.updateOne({_id : req.userId } , req.body)
+
+    res.json({
+        message : " user info updated successfully ." 
+    })
+
+})
+
+//2. Route to get users from the backend, filterable via firstName/lastName
+//This is needed so users can search for their friends and send them money
+router.get("/bulk", async (req, res) => {
+    const filter = req.query.filter || "";
+
+    const users = await User.find({
+        $or: [{
+            firstName: {
+                "$regex": filter
+            }
+        }, {
+            lastName: {
+                "$regex": filter
+            }
+        }]
+    })
+
+    res.json({
+        user: users.map(user => ({
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            _id: user._id
+        }))
+    })
+})
+ 
+
 // Correct the export statement
 module.exports = router;

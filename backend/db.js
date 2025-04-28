@@ -42,9 +42,29 @@ const userSchema = mongoose.Schema({
    }
 })
 
+/**
+ Accounts table
+The Accounts table will store the INR balances of a user.
+ */
+
+const accountSchema = mongoose.Schema({
+    userId : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'User',
+        require : true
+    } , 
+    balance : {
+        type : Number  ,
+        require : true
+    }
+})
+
+const account = mongoose.model('Account' , accountSchema);
+
 //create a model from the schema 
 const User = mongoose.model('User' , userSchema);
 
 module.exports = {
-    User
+    User , 
+    account
 };
