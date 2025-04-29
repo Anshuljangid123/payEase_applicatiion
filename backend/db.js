@@ -59,12 +59,12 @@ const accountSchema = mongoose.Schema({
     }
 })
 
-const account = mongoose.model('Account' , accountSchema);
+const Account = mongoose.model('Account' , accountSchema);
 
 //create a model from the schema 
 const User = mongoose.model('User' , userSchema);
 
 module.exports = {
     User , 
-    account
+    Account
 };

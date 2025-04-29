@@ -1,7 +1,7 @@
 const express = require("express");
 //    api/v1/user  -> this file route.
 const zod = require('zod');
-const { User } = require("../db");
+const { User, Account } = require("../db");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = require("../config");
 const { authMiddleware } = require("../middleware");
@@ -28,6 +28,7 @@ router.post("/signup", async (req, res) => {
         data: validatedData // only if success is true
     }
      */
+
     const {success} = signupSchema.safeParse(req.body);
     if(!success){
         return res.json({
@@ -38,14 +39,22 @@ router.post("/signup", async (req, res) => {
         username : body.username // this func returns a document or null for success or failure.
     })
     if(user && user._id){
-        return res.json({
+        return res.status(411).json({
             message : "email already taken / incorrect credentials "
         })
     }
     const dbUser = await User.create(body);
 
+    const userId = dbUser._id;
+
+    // -------- create  a new Account -------------
+    await Account.create({
+        userId, 
+        balance : 1 + Math.random() * 10000
+    })
+
     const token = jwt.sign({
-        userId : dbUser._id 
+        userId
     } , JWT_SECRET);
 
     res.json({
