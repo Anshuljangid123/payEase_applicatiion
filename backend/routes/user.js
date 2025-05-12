@@ -3,7 +3,7 @@ const express = require("express");
 const zod = require('zod');
 const { User, Account } = require("../db");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = require("../config");
+const JWT_SECRET = require("../config").default;
 const { authMiddleware } = require("../middleware");
 
 const router = express.Router();
@@ -13,14 +13,15 @@ const signupSchema = zod.object({
     username : zod.string(),
     password : zod.string() , 
     firstName : zod.string(),
-    lastname : zod.string()
+    lastName : zod.string()
 })
 
 // Define a proper handler for the route
 router.post("/signup", async (req, res) => {
+    console.log("inside signup route post request ")
     // Your signup logic here (e.g., save user to DB)
     const body = req.body;
-    
+    console.log(body);
     // safeParse(data) is a Zod method that tries to validate data (in this case, req.body) against the schema.
     /**
      {
@@ -67,8 +68,8 @@ const signinSchema = zod.object({
     username : zod.string().email(),
     password : zod.string()
 })
-
-router.post("/signin" , authMiddleware , async(req, res) => {
+ 
+router.post("/signin" , async(req, res) => {
     const {success} = signinSchema.safeParse(req.body);
     if(!success){
         // i.e. data is valid 

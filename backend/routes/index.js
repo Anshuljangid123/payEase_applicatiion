@@ -1,8 +1,6 @@
 // backend/api/index.js
 //  /api/v1 -> this file route address
-
 const express = require('express'); // Importing the Express framework to use its routing functionality.
-
 
 const userRouter = require("./user.js");
 const accountRouter = require("./accounts.js")

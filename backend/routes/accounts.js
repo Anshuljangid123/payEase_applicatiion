@@ -8,6 +8,7 @@ const { default: mongoose } = require('mongoose');
 const router = express.Router();
 
 router.get("/balance", authMiddleware , async (req,res)=>{
+    console.log("inside balance router")
     const account = await Account.findOne({
         userId : req.userId
     })
@@ -20,6 +21,7 @@ router.get("/balance", authMiddleware , async (req,res)=>{
 //2. An endpoint for user to transfer money to another account
 //  Route: /api/v1/account/transfer
 router.post("/transfer" , authMiddleware , async (req, res)=>{
+    console.log("inside the transfer route ")
     const session = await mongoose.startSession();
 
     session.startTransaction(); // ____________start transaction ___________________
@@ -73,7 +75,6 @@ router.post("/transfer" , authMiddleware , async (req, res)=>{
         message : "transfer successull"
     })
 
-
-
 })
+
 module.exports  = router;
