@@ -40,7 +40,7 @@ router.post("/transfer" , authMiddleware , async (req, res)=>{
         })
     }
 
-    const toAccount = await Account.findOne({
+    const toAccount = await Account.findOne({ 
         userId : to
     }).session(session)//___________________
 

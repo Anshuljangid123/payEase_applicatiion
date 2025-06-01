@@ -10,12 +10,12 @@ const router = express.Router();
 
 //You're validating the request body (req.body) using the Zod schema (signupSchema) you defined earlier.
 const signupSchema = zod.object({
-    username : zod.string(),
-    password : zod.string() , 
     firstName : zod.string(),
-    lastName : zod.string()
+    lastName : zod.string(),
+    email : zod.string(),
+    password : zod.string() , 
 })
-
+// username 
 // Define a proper handler for the route
 router.post("/signup", async (req, res) => {
     console.log("inside signup route post request ")
@@ -30,14 +30,16 @@ router.post("/signup", async (req, res) => {
     }
      */
 
+    console.log("Creating user with:", body);
+
     const {success} = signupSchema.safeParse(req.body);
     if(!success){
         return res.json({
             message  : "email already taken / incorrect inputs"
         })
     }
-    const user = User.findOne({
-        username : body.username // this func returns a document or null for success or failure.
+    const user = await User.findOne({
+        email : body.email // this func returns a document or null for success or failure.
     })
     if(user && user._id){
         return res.status(411).json({
@@ -65,7 +67,7 @@ router.post("/signup", async (req, res) => {
 });
 
 const signinSchema = zod.object({
-    username : zod.string().email(),
+    email : zod.string().email(),
     password : zod.string()
 })
  
@@ -79,12 +81,12 @@ router.post("/signin" , async(req, res) => {
     }
     //findOne() (with await) returns null if no matching user is found.
     const user = await User.findOne({
-        username : req.body.username , 
+        email : req.body.email , 
         password : req.body.password
     })
 
     if(user){
-        //“If a user with the given username and password exists…”
+        //“If a user with the given email and password exists…”
         const token = jwt.sign({
             userId : user._id
         }, JWT_SECRET)
@@ -101,6 +103,15 @@ router.post("/signin" , async(req, res) => {
     })
 })
 
+// router to fetch all the users form the Users table in db using the search bar 
+
+router.get("/fetchUsers" , async(req, res) => {
+    const search = req.query.search || "" ;
+    const users = await User.find({
+        firstName : {$regex : search , $options : "i"} // case insensitive match 
+    }).select("firstName lastName")
+    res.json(users)
+})
 //Whatever they send, we need to update it in the database for the user.
 //Use the middleware we defined in the last section to authenticate the user
 
@@ -146,7 +157,7 @@ router.get("/bulk", async (req, res) => {
 
     res.json({
         user: users.map(user => ({
-            username: user.username,
+            email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
             _id: user._id
@@ -154,6 +165,7 @@ router.get("/bulk", async (req, res) => {
     })
 })
  
+
 
 // Correct the export statement
 module.exports = router;

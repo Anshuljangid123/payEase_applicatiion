@@ -14,7 +14,20 @@ const connectDB = async () => {
 connectDB();
 
 const userSchema = mongoose.Schema({
-   username : {
+   
+   firstName : {
+    type : String , 
+    require : true,
+    trim : true,
+    maxLength : 50
+   } , 
+   lastName : {
+    type : String , 
+    require : true,
+    trim : true,
+    maxLength : 50
+   },
+   email : {
     type : String,
     require : true,
     unique : true,
@@ -27,19 +40,7 @@ const userSchema = mongoose.Schema({
     type : String , 
     require : true ,
     minLength : 6
-   } , 
-   firstName : {
-    type : String , 
-    require : true,
-    trim : true,
-    maxLength : 50
-   } , 
-   lastName : {
-    type : String , 
-    require : true,
-    trim : true,
-    maxLength : 50
-   }
+   } 
 })
 
 /**
