@@ -1,7 +1,47 @@
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export const SendMoney = () => {
-  console.log("sendMoney component render");
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const {name , userId} = location.state || {} ;
+  const [amount  , setAmount] = useState("");
+
+  const initials = name 
+      ? name
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase()
+      :  "??";
+      
+      
+  console.log("sendMoney component render.......");
+
+  const handleTransfer = async () =>{
+    if(!amount || amount <= 0 ){
+      alert("please enter the valid amount");
+    }
+    try{
+      const token = localStorage.getItem("jwt");
+      const res = await axios.post("http://localhost:3000/api/v1/account/transfer" ,{
+        amount : Number(amount),
+        to : userId
+      },{
+        headers : {
+          Authorization : `Bearer ${token}`,
+        }
+      });
+      alert(res.data.message);
+      navigate("/dashboard");
+    }
+    catch(error){
+      console.log("transfer error : " , error);
+      alert( error?.response?.data?.message || "transfer failed try again ")
+    }
+  }
 
   return (
     <div className="min-h-screen bg-neutral-950 flex items-center justify-center px-4">
@@ -14,9 +54,9 @@ export const SendMoney = () => {
         {/* Recipient */}
         <div className="flex items-center mb-6">
           <div className="w-14 h-14 rounded-full bg-green-500 text-white flex items-center justify-center text-lg font-bold shadow-md">
-            A
+            {initials}
           </div>
-          <div className="ml-4 text-xl font-medium">Friend's Name</div>
+          <div className="ml-4 text-xl font-medium">{name || "Unknown"}</div>
         </div>
 
         {/* Input */}
@@ -27,12 +67,14 @@ export const SendMoney = () => {
           <input
             type="number"
             placeholder="Enter amount"
+            onChange={(e) => setAmount(e.target.value)}
             className="w-full px-4 py-3 bg-neutral-800 text-white border border-neutral-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition"
           />
         </div>
 
         {/* Button */}
         <button
+          onClick={handleTransfer}
           className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-semibold tracking-wide shadow-md transition duration-200"
         >
           Initiate Transfer

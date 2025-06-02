@@ -17,19 +17,19 @@ const userSchema = mongoose.Schema({
    
    firstName : {
     type : String , 
-    require : true,
+    required : true,
     trim : true,
     maxLength : 50
    } , 
    lastName : {
     type : String , 
-    require : true,
+    required : true,
     trim : true,
     maxLength : 50
    },
    email : {
     type : String,
-    require : true,
+    required : true,
     unique : true,
     trim : true,
     lowercase : true,
@@ -38,7 +38,7 @@ const userSchema = mongoose.Schema({
    },
    password : {
     type : String , 
-    require : true ,
+    required : true ,
     minLength : 6
    } 
 })
@@ -52,11 +52,11 @@ const accountSchema = mongoose.Schema({
     userId : {
         type : mongoose.Schema.Types.ObjectId,
         ref : 'User',
-        require : true
+        required : true
     } , 
     balance : {
         type : Number  ,
-        require : true
+        required : true
     }
 })
 

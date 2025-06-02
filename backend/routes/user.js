@@ -103,15 +103,6 @@ router.post("/signin" , async(req, res) => {
     })
 })
 
-// router to fetch all the users form the Users table in db using the search bar 
-
-router.get("/fetchUsers" , async(req, res) => {
-    const search = req.query.search || "" ;
-    const users = await User.find({
-        firstName : {$regex : search , $options : "i"} // case insensitive match 
-    }).select("firstName lastName")
-    res.json(users)
-})
 //Whatever they send, we need to update it in the database for the user.
 //Use the middleware we defined in the last section to authenticate the user
 
